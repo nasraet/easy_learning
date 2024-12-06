@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Skip Counting Activity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .instructions {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        .number-line {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .number {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background-color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            user-select: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .number.highlighted {
+            background-color: #FFD700;
+            color: #fff;
+            transform: scale(1.2);
+        }
+        .number.circled {
+            border-color: #FF4500;
+            border-width: 4px;
+        }
+        .progress {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .audio-button {
+            margin: 20px 0;
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .audio-button:hover {
+            background-color: #45a049;
+        }
+        .character-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .character {
+            max-width: 150px;
+        }
+        .character.animate {
+            animation: wave 2s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(-10deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Skip Counting Activity</h1>
+    <div class="character-container">
+        <img class="character" id="character" src="https://example.com/cartoon-character.png" alt="Cartoon Character">
+    </div>
+    <p class="instructions">Click multiples of 3 to highlight them. Circle every 6th multiple!</p>
+    <button class="audio-button" onclick="playAudio()">🔊 Play Instructions</button>
+    <div class="number-line" id="numberLine"></div>
+    <div class="progress" id="progress">Progress: 0/11 correct highlights and 0/6 circles</div>
+    <div class="progress" id="score">Score: 0 | Timer: <span id="timer">0</span> seconds</div>
+
+    <script>
+        const numberLine = document.getElementById('numberLine');
+        const progress = document.getElementById('progress');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const character = document.getElementById('character');
+
+        let correctHighlights = 0;
+        let correctCircles = 0;
+        let score = 0;
+        let timeElapsed = 0;
+        const totalHighlights = 11;
+        const totalCircles = 6;
+
+        // Timer
+        let timer = setInterval(() => {
+            timeElapsed++;
+            timerDisplay.textContent = timeElapsed;
+        }, 1000);
+
+        // Generate numbers from 0 to 30
+        for (let i = 0; i <= 30; i++) {
+            const numberDiv = document.createElement('div');
+            numberDiv.textContent = i;
+            numberDiv.className = 'number';
+            numberDiv.dataset.value = i;
+
+            // Add click event
+            numberDiv.addEventListener('click', function () {
+                const value = parseInt(this.dataset.value);
+
+                // Sound Effects
+                const audio = new Audio('https://example.com/click-sound.mp3');
+
+                // Highlight multiples of 3
+                if (value % 3 === 0) {
+                    if (!this.classList.contains('highlighted')) {
+                        correctHighlights++;
+                        score += 5;
+                        audio.play();
+                    }
+                    this.classList.toggle('highlighted');
+                }
+
+                // Circle every 6th multiple
+                if (value % 6 === 0) {
+                    if (!this.classList.contains('circled')) {
+                        correctCircles++;
+                        score += 10;
+                        audio.play();
+                    }
+                    this.classList.toggle('circled');
+                }
+
+                // Update progress and score
+                updateProgress();
+            });
+
+            numberLine.appendChild(numberDiv);
+        }
+
+        // Update progress
+        function updateProgress() {
+            progress.textContent = `Progress: ${correctHighlights}/${totalHighlights} correct highlights and ${correctCircles}/${totalCircles} circles`;
+            scoreDisplay.textContent = `Score: ${score} | Timer: ${timeElapsed} seconds`;
+
+            // Check for completion
+            if (correctHighlights === totalHighlights && correctCircles === totalCircles) {
+                clearInterval(timer);
+                alert(`Congratulations! You completed the activity in ${timeElapsed} seconds with a score of ${score}.`);
+            }
+        }
+
+        // Play audio instructions and trigger character animation
+        function playAudio() {
+            const audio = new Audio('https://example.com/narration.mp3');
+            audio.play();
+            character.classList.add('animate');
+            audio.addEventListener('ended', () => {
+                character.classList.remove('animate');
+            });
+        }
+    </script>
+</body>
+</html>
